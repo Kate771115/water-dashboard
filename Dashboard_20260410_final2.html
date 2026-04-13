@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>庫存 Dashboard 2026-04-10</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;padding:24px;font-size:14px}
+.header{margin-bottom:20px}
+.header h1{font-size:18px;font-weight:600;margin-bottom:3px}
+.header p{font-size:12px;color:#999}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e6}
+.mlabel{font-size:11px;color:#888;margin-bottom:6px}
+.mval{font-size:26px;font-weight:600}
+.msub{font-size:11px;margin-top:4px}
+.red{color:#c0392b}.orange{color:#c47d0e}.green{color:#1a7a4a}.muted{color:#999}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.card{background:#fff;border-radius:10px;padding:18px;border:1px solid #e8e8e6}
+.ctitle{font-size:13px;font-weight:600;color:#555;margin-bottom:10px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:#666;margin-bottom:10px}
+.ldot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle}
+.pie-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:#555;margin-top:10px}
+.pie-legend span{display:flex;align-items:center;gap:5px}
+.tabs{display:flex;border-bottom:2px solid #e8e8e6;margin-bottom:16px}
+.tab{padding:8px 18px;border:none;background:none;font-size:13px;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;font-weight:500}
+.tab:hover{color:#333}
+.tab.active{color:#1a1a1a;border-bottom:3px solid #1a1a1a}
+.panel{display:none}.panel.active{display:block}
+.frow{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fbtn{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
+.fbtn:hover{background:#f5f5f3}
+.fbtn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.sinput{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;width:160px;font-family:inherit;outline:none}
+.tw{overflow-x:auto}
+table{width:100%;font-size:12px;border-collapse:collapse}
+th{text-align:left;color:#888;font-weight:500;padding:6px 10px 10px;border-bottom:2px solid #e8e8e6;white-space:nowrap;user-select:none}
+td{padding:8px 10px;border-bottom:1px solid #f0f0ee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr.hidden{display:none}
+tr:hover td{background:#fafafa}
+.gh td{background:#f7f7f5;font-weight:700;font-size:11px;color:#555;padding:6px 10px;border-bottom:1px solid #e8e8e6;letter-spacing:0.5px;text-transform:uppercase}
+tr:hover.gh td{background:#f7f7f5}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;display:inline-block}
+.br{background:#fde8e8;color:#c0392b}.by{background:#fef3d0;color:#b7770d}.bg{background:#e0f5e9;color:#1a7a4a}.bx{background:#f0f0ee;color:#888}
+.lamp{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+.lr{background:#e74c3c}.ly{background:#f39c12}.lg{background:#27ae60}.lx{background:#ccc}
+.ur td:first-child{border-left:4px solid #e74c3c;padding-left:6px}
+.wr td:first-child{border-left:4px solid #f39c12;padding-left:6px}
+@media(max-width:768px){.metrics{grid-template-columns:1fr 1fr}.chart-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>庫存管理 Dashboard</h1>
+  <p>資料日期：2026-04-10 ｜ 安全帶 / 方向盤 / 模組 / 氣囊</p>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="mlabel">追蹤品號</div><div class="mval">49</div><div class="msub muted">安全帶+方向盤+模組+氣囊</div></div>
+  <div class="metric"><div class="mlabel">7天內到期且短缺</div><div class="mval red">128</div><div class="msub red">需立即處理</div></div>
+  <div class="metric"><div class="mlabel">安全帶低於安全庫存</div><div class="mval red">3</div><div class="msub orange">需補料</div></div>
+  <div class="metric"><div class="mlabel">已逾期訂單品號</div><div class="mval red">33</div><div class="msub red">預交日已過</div></div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+  <button id="toggleBtn" onclick="toggleNormal()" style="font-size:11px;padding:4px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer">顯示全部</button>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+  <div class="card" id="card-安全帶">
+    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">安全帶</div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6">品名</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">存貨</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">安全庫存</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">可撐天數</th>
+        <th style="text-align:center;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">狀態</th>
+      </tr>
+      <tbody id="tbl-安全帶"></tbody>
+    </table>
+    <div id="cnt-安全帶" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
+  </div>
+  <div class="card" id="card-方向盤">
+    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">方向盤</div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6">品名</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">存貨</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">安全庫存</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">可撐天數</th>
+        <th style="text-align:center;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">狀態</th>
+      </tr>
+      <tbody id="tbl-方向盤"></tbody>
+    </table>
+    <div id="cnt-方向盤" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+  <div class="card" id="card-模組">
+    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">模組</div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6">品名</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">存貨</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">安全庫存</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">可撐天數</th>
+        <th style="text-align:center;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">狀態</th>
+      </tr>
+      <tbody id="tbl-模組"></tbody>
+    </table>
+    <div id="cnt-模組" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
+  </div>
+  <div class="card" id="card-氣囊">
+    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">氣囊</div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
+        <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6">品名</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">存貨</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">安全庫存</th>
+        <th style="text-align:right;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">可撐天數</th>
+        <th style="text-align:center;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:10%">狀態</th>
+      </tr>
+      <tbody id="tbl-氣囊"></tbody>
+    </table>
+    <div id="cnt-氣囊" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="swTab('stock',this)">庫存對比</button>
+  <button class="tab" onclick="swTab('urgency',this)">預交日倒數</button>
+  <button class="tab" onclick="swTab('shortage',this)">短缺總覽</button>
+</div>
+
+<div id="tab-stock" class="panel active">
+  <div class="card">
+    <div class="frow">
+      <button class="fbtn active" onclick="fS('all',this)">全部</button>
+      <button class="fbtn" onclick="fS('issue',this)">只看問題品項</button>
+      <input class="sinput" placeholder="搜尋品號 / 品名" oninput="sS(this.value)">
+      <span style="font-size:11px;color:#bbb;margin-left:auto">2026-04-10</span>
+    </div>
+    <div class="tw"><table id="tS">
+      <tr>
+        <th style="width:5%">燈號</th><th style="width:22%">品號</th><th style="width:29%">品名</th>
+        <th style="width:10%;text-align:right">存貨供給量</th><th style="width:10%;text-align:right">安全庫存</th>
+        <th style="width:10%;text-align:right">差異</th><th style="width:14%;text-align:center">狀態</th>
+      </tr>
+    </table></div>
+  </div>
+</div>
+
+<div id="tab-urgency" class="panel">
+  <div class="card">
+    <div class="frow">
+      <button class="fbtn active" onclick="fU('all',this)">全部</button>
+      <button class="fbtn" onclick="fU('3',this)">3天內</button>
+      <button class="fbtn" onclick="fU('7',this)">7天內</button>
+      <button class="fbtn" onclick="fU('14',this)">14天內</button>
+      <input class="sinput" placeholder="搜尋品號 / 品名" oninput="ssU(this.value)">
+    </div>
+    <div class="tw"><table id="tU">
+      <tr>
+        <th style="width:5%">燈號</th><th style="width:22%">品號</th><th style="width:25%">品名</th>
+        <th style="width:10%">預交日</th><th style="width:8%">倒數</th>
+        <th style="width:10%;text-align:right">訂單量</th><th style="width:8%;text-align:right">存貨</th>
+        <th style="width:10%;text-align:right">短缺</th>
+      </tr>
+    </table></div>
+  </div>
+</div>
+
+<div id="tab-shortage" class="panel">
+  <div class="card">
+    <div class="frow">
+      <button class="fbtn active" onclick="fSh('all',this)">全部</button>
+      <button class="fbtn" onclick="fSh('shortage',this)">只看有短缺</button>
+      <input class="sinput" placeholder="搜尋品號 / 品名" oninput="ssSh(this.value)">
+    </div>
+    <div class="tw"><table id="tSh">
+      <tr>
+        <th style="width:5%">燈號</th><th style="width:21%">品號</th><th style="width:27%">品名</th>
+        <th style="width:10%;text-align:right">存貨</th><th style="width:10%;text-align:right">安全庫存</th>
+        <th style="width:10%;text-align:right">差異</th><th style="width:10%;text-align:right">總短缺量</th>
+        <th style="width:7%;text-align:right">最早到期</th>
+      </tr>
+    </table></div>
+  </div>
+</div>
+
+<script>
+const GRP = {
+  '安全帶': [{p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',stock:0,safe:0,diff:0,shortage:441,days:-9},
+  {p:'A450111NBS00D0',n:'小帶扣單邊組',stock:169,safe:0,diff:169,shortage:284,days:-9},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',stock:74,safe:0,diff:74,shortage:397,days:-9},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',stock:125,safe:24,diff:101,shortage:2489,days:-9},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',stock:20,safe:24,diff:-4,shortage:2587,days:-9},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',stock:96,safe:24,diff:72,shortage:2182,days:-9},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',stock:96,safe:24,diff:72,shortage:2194,days:-9},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2214,days:-9},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2216,days:-9},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',stock:238,safe:144,diff:94,shortage:2222,days:-9},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',stock:192,safe:144,diff:48,shortage:2265,days:-9},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',stock:156,safe:72,diff:84,shortage:2457,days:-9},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',stock:152,safe:72,diff:80,shortage:2451,days:-9},
+  {p:'A450130NS10000',n:'高調器總成',stock:702,safe:216,diff:486,shortage:4564,days:-9},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',stock:216,safe:214,diff:2,shortage:2257,days:-9},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',stock:180,safe:72,diff:108,shortage:2419,days:-9},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',stock:36,safe:72,diff:-36,shortage:2560,days:-9},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',stock:90,safe:80,diff:10,shortage:2532,days:-9},
+  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',stock:0,safe:0,diff:0,shortage:815,days:-9},
+  {p:'A450132NN100F0',n:'三排左側捲收器總成',stock:12,safe:0,diff:12,shortage:389,days:-9},
+  {p:'A450132NN100G0',n:'三排右側捲收器總成',stock:0,safe:0,diff:0,shortage:400,days:-9},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',stock:132,safe:72,diff:60,shortage:7437,days:-9},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',stock:136,safe:72,diff:64,shortage:7412,days:-9},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',stock:334,safe:240,diff:94,shortage:7163,days:-9},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',stock:288,safe:240,diff:48,shortage:7102,days:-9},
+  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',stock:0,safe:0,diff:0,shortage:118,days:21},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',stock:403,safe:240,diff:163,shortage:7150,days:-9},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',stock:196,safe:240,diff:-44,shortage:7361,days:-9},
+  {p:'A450131NB100C0',n:'二排左側帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
+  {p:'A450131NB100D0',n:'二排右側帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
+  {p:'A450131NBC00E0',n:'二排後中帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
+  {p:'A450120HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450121HL00000',n:'方向盤本體總成(皮革)',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450134HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450135HU00000',n:'方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A450136HU00000',n:'方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A450137HU00000',n:'方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A4B0125HU00000',n:'方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:0,days:999},
+  {p:'A450075HU00002',n:'方向盤本體總成',stock:0,safe:40,diff:-40,shortage:0,days:999}],
+  '方向盤': [{p:'A450075HU00002',n:'PU方向盤本體總成',stock:40,safe:40,diff:0,shortage:1024,days:-9},
+  {p:'A450120HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:206,days:5},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',stock:0,safe:24,diff:-24,shortage:268,days:5},
+  {p:'A450134HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:96,days:21},
+  {p:'A450135HU00000',n:'方向盤本體總成',stock:48,safe:48,diff:0,shortage:2111,days:-9},
+  {p:'A450136HU00000',n:'方向盤本體總成',stock:48,safe:48,diff:0,shortage:1287,days:-9},
+  {p:'A450137HU00000',n:'方向盤本體總成',stock:67,safe:48,diff:19,shortage:4308,days:-9},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:2232,days:5},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',stock:0,safe:48,diff:-48,shortage:816,days:-3},
+  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:504,days:-9}],
+  '模組':   [{p:'A450145AG000A0',n:'駕駛座氣囊模組',stock:8,safe:null,diff:null,shortage:164,days:21},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成(二排)',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成(二排)',stock:0,safe:24,diff:-24,shortage:0,days:999},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',stock:0,safe:72,diff:-72,shortage:0,days:999},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',stock:0,safe:72,diff:-72,shortage:0,days:999}],
+  '氣囊':   [{p:'B450122A1C00A0',n:'駕駛座氣囊袋總成 DAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450123A1C00B0',n:'乘客座氣囊袋總成 PAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450124A1C00C0',n:'左側邊氣囊袋總成 SAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450125A1C00C0',n:'右側邊氣囊袋總成 SAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450138A1C00A0',n:'駕駛座氣囊袋總成 DAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450140A1C00B0',n:'乘客座氣囊袋總成 PAB',stock:0,safe:null,diff:null,shortage:0,days:999},
+  {p:'B450145A1C00A0',n:'駕駛座氣囊袋總成 DAB',stock:0,safe:null,diff:null,shortage:0,days:999}],
+};
+const UD = [{p:'A450135HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-10',days:0,qty:48,stock:0,short:48},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-10',days:0,qty:38,stock:10,short:38},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-10',days:0,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-10',days:0,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-10',days:0,qty:20,stock:0,short:20},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-10',days:0,qty:72,stock:0,short:72},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-10',days:0,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-10',days:0,qty:96,stock:0,short:96},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-10',days:0,qty:96,stock:0,short:96},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-10',days:0,qty:18,stock:0,short:18},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-10',days:0,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-10',days:0,qty:20,stock:0,short:20},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-10',days:0,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-10',days:0,qty:67,stock:0,short:67},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-10',days:0,qty:60,stock:0,short:60},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-13',days:3,qty:48,stock:0,short:48},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-13',days:3,qty:24,stock:0,short:24},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-13',days:3,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-13',days:3,qty:12,stock:0,short:12},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-13',days:3,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-13',days:3,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-13',days:3,qty:20,stock:0,short:20},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-13',days:3,qty:72,stock:0,short:72},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-13',days:3,qty:60,stock:0,short:60},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-13',days:3,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-13',days:3,qty:96,stock:0,short:96},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-13',days:3,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-13',days:3,qty:22,stock:0,short:22},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-13',days:3,qty:12,stock:0,short:12},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-13',days:3,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-13',days:3,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-13',days:3,qty:71,stock:0,short:71},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-13',days:3,qty:72,stock:0,short:72},
+  {p:'A450135HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:48,stock:0,short:48},
+  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'04-14',days:4,qty:40,stock:0,short:40},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-14',days:4,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-14',days:4,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-14',days:4,qty:30,stock:0,short:30},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-14',days:4,qty:84,stock:0,short:84},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-14',days:4,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-14',days:4,qty:48,stock:0,short:48},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-14',days:4,qty:96,stock:0,short:96},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-14',days:4,qty:18,stock:0,short:18},
+  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'04-14',days:4,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-14',days:4,qty:25,stock:0,short:25},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:4,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-14',days:4,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-14',days:4,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-14',days:4,qty:73,stock:0,short:73},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:4,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-15',days:5,qty:48,stock:0,short:48},
+  {p:'A450120HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:72,stock:0,short:72},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-15',days:5,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-15',days:5,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-15',days:5,qty:20,stock:0,short:20},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-15',days:5,qty:60,stock:0,short:60},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-15',days:5,qty:60,stock:0,short:60},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-15',days:5,qty:48,stock:0,short:48},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-15',days:5,qty:48,stock:0,short:48},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-15',days:5,qty:18,stock:0,short:18},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-15',days:5,qty:20,stock:0,short:20},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:5,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-15',days:5,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-15',days:5,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-15',days:5,qty:65,stock:0,short:65},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:5,qty:60,stock:0,short:60},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-16',days:6,qty:48,stock:0,short:48},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-16',days:6,qty:12,stock:0,short:12},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-16',days:6,qty:24,stock:0,short:24},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-16',days:6,qty:48,stock:0,short:48},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-16',days:6,qty:36,stock:0,short:36},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-16',days:6,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-16',days:6,qty:20,stock:0,short:20},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-16',days:6,qty:72,stock:0,short:72},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-16',days:6,qty:60,stock:0,short:60},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-16',days:6,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-16',days:6,qty:96,stock:0,short:96},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-16',days:6,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-16',days:6,qty:22,stock:0,short:22},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:6,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-16',days:6,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-16',days:6,qty:66,stock:0,short:66},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:6,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-17',days:7,qty:48,stock:0,short:48},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:48,stock:0,short:48},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:30,stock:0,short:30},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
+  {p:'A450130NS10000',n:'高調器總成',date:'04-17',days:7,qty:54,stock:0,short:54},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-17',days:7,qty:48,stock:0,short:48},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-17',days:7,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-17',days:7,qty:30,stock:0,short:30},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-17',days:7,qty:84,stock:0,short:84},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-17',days:7,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-17',days:7,qty:48,stock:0,short:48},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-17',days:7,qty:18,stock:0,short:18},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-17',days:7,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-17',days:7,qty:38,stock:0,short:38},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:7,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-17',days:7,qty:24,stock:0,short:24},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-17',days:7,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-17',days:7,qty:74,stock:0,short:74},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:7,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-20',days:10,qty:48,stock:0,short:48},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-20',days:10,qty:24,stock:0,short:24},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-22',days:12,qty:48,stock:0,short:48},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-22',days:12,qty:1,stock:0,short:1},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-22',days:12,qty:5,stock:0,short:5},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-22',days:12,qty:10,stock:0,short:10},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:12,qty:5,stock:0,short:5},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:12,qty:3,stock:0,short:3},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-22',days:12,qty:1,stock:0,short:1},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-22',days:12,qty:1,stock:0,short:1},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-24',days:14,qty:48,stock:0,short:48},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-27',days:17,qty:48,stock:0,short:48},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-28',days:18,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'05-01',days:21,qty:456,stock:0,short:456},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'05-01',days:21,qty:432,stock:0,short:432},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'05-01',days:21,qty:465,stock:0,short:465},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
+  {p:'A450130NS10000',n:'高調器總成',date:'05-01',days:21,qty:918,stock:0,short:918},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'05-01',days:21,qty:480,stock:0,short:480},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'05-01',days:21,qty:528,stock:0,short:528},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'05-01',days:21,qty:460,stock:0,short:460},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'05-01',days:21,qty:504,stock:0,short:504},
+  {p:'A450132NN100F0',n:'三排左側捲收器總成',date:'05-01',days:21,qty:72,stock:0,short:72},
+  {p:'A450132NN100G0',n:'三排右側捲收器總成',date:'05-01',days:21,qty:72,stock:0,short:72},
+  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',date:'05-01',days:21,qty:120,stock:0,short:120},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:468,stock:0,short:468},
+  {p:'A450120HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:48,stock:0,short:48},
+  {p:'A450134HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:24,stock:0,short:24},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'05-01',days:21,qty:48,stock:0,short:48},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'05-01',days:21,qty:444,stock:0,short:444},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'05-01',days:21,qty:444,stock:0,short:444},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:1272,stock:0,short:1272},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'05-01',days:21,qty:1236,stock:0,short:1236},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'05-01',days:21,qty:1248,stock:0,short:1248},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'05-01',days:21,qty:1344,stock:0,short:1344},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'05-01',days:21,qty:1248,stock:0,short:1248},
+  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',date:'05-01',days:21,qty:72,stock:0,short:72},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'05-01',days:21,qty:1233,stock:0,short:1233},
+  {p:'A450135HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:384,stock:0,short:384},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:312,stock:0,short:312},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:624,stock:0,short:624},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'05-01',days:21,qty:90,stock:0,short:90},
+  {p:'A450111NBS00D0',n:'小帶扣單邊組',date:'05-01',days:21,qty:119,stock:25,short:119},
+  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'05-01',days:21,qty:96,stock:0,short:96},
+  {p:'A450145AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:4,stock:8,short:4},
+  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'05-01',days:21,qty:200,stock:0,short:200},
+  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:21,qty:120,stock:0,short:120},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:21,qty:528,stock:0,short:528},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'05-01',days:21,qty:144,stock:0,short:144}];
+
+function lc(d){
+  if(d.safe===null)return 'x';
+  if(d.stock<d.safe)return 'r';
+  if(d.stock===d.safe)return 'y';
+  return 'g';
+}
+function swTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// 四大分類各自建表
+var showAll = false;
+function buildGroupTable(grp) {
+  var tbody = document.getElementById('tbl-' + grp);
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  var normalCount = 0;
+  var parts = GRP[grp] ? GRP[grp].slice() : [];
+  parts.sort(function(a,b) {
+    var aOk = !a.safe || a.stock >= a.safe;
+    var bOk = !b.safe || b.stock >= b.safe;
+    return (aOk === bOk) ? 0 : aOk ? 1 : -1;
+  });
+  parts.forEach(function(d) {
+    var isOk = !d.safe || d.stock >= d.safe;
+    if(isOk) normalCount++;
+    if(isOk && !showAll) return;
+    var dailyUse = (d.safe && d.safe > 0) ? d.safe / 3 : 0;
+    var days = dailyUse > 0 ? (d.stock / dailyUse).toFixed(1) : null;
+    var daysStr = days !== null ? days + '天' : '—';
+    var daysColor = days !== null && parseFloat(days) < 3 ? 'color:#A32D2D;font-weight:600' : days !== null ? 'color:#1D9E75' : '';
+    var badge = isOk
+      ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;background:#EAF3DE;color:#3B6D11">正常</span>'
+      : '<span style="font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;background:#FCEBEB;color:#A32D2D">危險</span>';
+    var tr = document.createElement('tr');
+    if(!isOk) tr.style.background = '#fffafa';
+    tr.innerHTML =
+      '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;font-family:monospace;font-size:11px">' + d.p + '</td>'
+      + '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + d.n + '">' + d.n + '</td>'
+      + '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;text-align:right">' + d.stock + '</td>'
+      + '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;text-align:right">' + (d.safe || '—') + '</td>'
+      + '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;text-align:right;' + daysColor + '">' + daysStr + '</td>'
+      + '<td style="padding:6px 6px;border-bottom:1px solid #f0f0ee;text-align:center">' + badge + '</td>';
+    tbody.appendChild(tr);
+  });
+  var cnt = document.getElementById('cnt-' + grp);
+  if(cnt) cnt.textContent = !showAll && normalCount > 0 ? '另有 ' + normalCount + ' 個正常，已隱藏' : '';
+}
+function buildWaterTable() {
+  ['安全帶','方向盤','模組','氣囊'].forEach(function(g) { buildGroupTable(g); });
+}
+function toggleNormal() {
+  showAll = !showAll;
+  document.getElementById('toggleBtn').textContent = showAll ? '只看問題' : '顯示全部';
+  buildWaterTable();
+}
+buildWaterTable();
+
+// Stock Table
+let sfS='all',ssS='';
+function renderS(){
+  const t=document.getElementById('tS');
+  t.querySelectorAll('tr.dr,tr.gh').forEach(r=>r.remove());
+  ['安全帶','方向盤','模組','氣囊'].forEach(g=>{
+    const h=document.createElement('tr');h.className='gh';h.innerHTML=`<td colspan="7">${g}</td>`;t.appendChild(h);
+    GRP[g].forEach(d=>{
+      const l=lc(d);
+      const ok=(sfS==='all'||(sfS==='issue'&&(l==='r'||l==='y')))&&(!ssS||d.p.includes(ssS)||d.n.includes(ssS));
+      const ds=d.diff!==null?(d.diff>0?'+'+d.diff:''+d.diff):'—';
+      const dc=d.diff===null?'':d.diff<0?'color:#c0392b;font-weight:600':d.diff===0?'color:#c47d0e':'color:#1a7a4a';
+      const badge=l==='r'?'<span class="badge br">短缺</span>':l==='y'?'<span class="badge by">剛好達標</span>':l==='g'?'<span class="badge bg">充足</span>':'<span class="badge bx">未設定</span>';
+      const tr=document.createElement('tr');tr.className='dr';if(!ok)tr.classList.add('hidden');
+      tr.innerHTML=`<td><span class="lamp l${l}"></span></td><td style="font-family:monospace;font-size:11px">${d.p}</td><td title="${d.n}">${d.n}</td><td style="text-align:right">${d.stock}</td><td style="text-align:right">${d.safe!==null?d.safe:'—'}</td><td style="text-align:right;${dc}">${ds}</td><td style="text-align:center">${badge}</td>`;
+      t.appendChild(tr);
+    });
+  });
+}
+function fS(v,btn){sfS=v;document.querySelectorAll('#tab-stock .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderS();}
+function sS(v){ssS=v;renderS();}
+
+// Urgency Table
+let sfU='all',ssU2='';
+function renderU(){
+  const t=document.getElementById('tU');t.querySelectorAll('tr.dr').forEach(r=>r.remove());
+  UD.forEach(d=>{
+    const l=d.days<=3?'r':d.days<=7?'y':'g';
+    const ok=(sfU==='all'||d.days<=parseInt(sfU))&&(!ssU2||d.p.includes(ssU2)||d.n.includes(ssU2));
+    const dc=d.days<=3?'#c0392b':d.days<=7?'#c47d0e':'#1a7a4a';
+    const tr=document.createElement('tr');tr.className='dr'+(d.days<=3?' ur':d.days<=7?' wr':'');if(!ok)tr.classList.add('hidden');
+    tr.innerHTML=`<td><span class="lamp l${l}"></span></td><td style="font-family:monospace;font-size:11px">${d.p}</td><td>${d.n}</td><td>${d.date}</td><td style="font-weight:600;color:${dc}">${d.days}天</td><td style="text-align:right">${d.qty}</td><td style="text-align:right">${d.stock}</td><td style="text-align:right;color:#c0392b;font-weight:600">${d.short}</td>`;
+    t.appendChild(tr);
+  });
+}
+function fU(v,btn){sfU=v;document.querySelectorAll('#tab-urgency .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderU();}
+function ssU(v){ssU2=v;renderU();}
+
+// Shortage Table
+let sfSh='all',ssSh2='';
+function renderSh(){
+  const t=document.getElementById('tSh');t.querySelectorAll('tr.dr,tr.gh').forEach(r=>r.remove());
+  ['安全帶','方向盤','模組','氣囊'].forEach(g=>{
+    const h=document.createElement('tr');h.className='gh';h.innerHTML=`<td colspan="8">${g}</td>`;t.appendChild(h);
+    GRP[g].forEach(d=>{
+      const l=lc(d);
+      const ok=(sfSh==='all'||(sfSh==='shortage'&&d.shortage>0))&&(!ssSh2||d.p.includes(ssSh2)||d.n.includes(ssSh2));
+      const ds=d.diff!==null?(d.diff>0?'+'+d.diff:''+d.diff):'—';
+      const dc=d.diff===null?'':d.diff<0?'color:#c0392b;font-weight:600':d.diff===0?'color:#c47d0e':'color:#1a7a4a';
+      const dstr=d.days===999?'—':d.days<0?`<span style="color:#c0392b">逾${Math.abs(d.days)}天</span>`:d.days+'天';
+      const tr=document.createElement('tr');tr.className='dr';if(!ok)tr.classList.add('hidden');
+      tr.innerHTML=`<td><span class="lamp l${l}"></span></td><td style="font-family:monospace;font-size:11px">${d.p}</td><td title="${d.n}">${d.n}</td><td style="text-align:right">${d.stock}</td><td style="text-align:right">${d.safe!==null?d.safe:'—'}</td><td style="text-align:right;${dc}">${ds}</td><td style="text-align:right;color:${d.shortage>0?'#c0392b':'#aaa'}">${d.shortage>0?d.shortage.toLocaleString():'0'}</td><td style="text-align:right">${dstr}</td>`;
+      t.appendChild(tr);
+    });
+  });
+}
+function fSh(v,btn){sfSh=v;document.querySelectorAll('#tab-shortage .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSh();}
+function ssSh(v){ssSh2=v;renderSh();}
+
+renderS();renderU();renderSh();buildWaterTable();
+</script>
+</body>
+</html>
