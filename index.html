@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>庫存 Dashboard 2026-04-10</title>
+<title>庫存 Dashboard 2026-04-13</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;padding:24px;font-size:14px}
@@ -53,12 +53,12 @@ tr:hover.gh td{background:#f7f7f5}
 <body>
 <div class="header">
   <h1>庫存管理 Dashboard</h1>
-  <p>資料日期：2026-04-10 ｜ 安全帶 / 方向盤 / 模組 / 氣囊</p>
+  <p>資料日期：2026-04-13 ｜ 安全帶 / 方向盤 / 模組 / 氣囊</p>
 </div>
 
 <div class="metrics">
   <div class="metric"><div class="mlabel">追蹤品號</div><div class="mval">49</div><div class="msub muted">安全帶+方向盤+模組+氣囊</div></div>
-  <div class="metric"><div class="mlabel">7天內到期且短缺</div><div class="mval red">128</div><div class="msub red">需立即處理</div></div>
+  <div class="metric"><div class="mlabel">7天內到期且短缺</div><div class="mval red">88</div><div class="msub red">需立即處理</div></div>
   <div class="metric"><div class="mlabel">安全帶低於安全庫存</div><div class="mval red">3</div><div class="msub orange">需補料</div></div>
   <div class="metric"><div class="mlabel">已逾期訂單品號</div><div class="mval red">33</div><div class="msub red">預交日已過</div></div>
 </div>
@@ -68,7 +68,7 @@ tr:hover.gh td{background:#f7f7f5}
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
   <div class="card" id="card-安全帶">
-    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">安全帶</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6"><span style="font-size:13px;font-weight:600;color:#444">安全帶</span><span id="rate-安全帶"></span></div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
       <tr>
         <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
@@ -83,7 +83,7 @@ tr:hover.gh td{background:#f7f7f5}
     <div id="cnt-安全帶" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
   </div>
   <div class="card" id="card-方向盤">
-    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">方向盤</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6"><span style="font-size:13px;font-weight:600;color:#444">方向盤</span><span id="rate-方向盤"></span></div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
       <tr>
         <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
@@ -100,7 +100,7 @@ tr:hover.gh td{background:#f7f7f5}
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
   <div class="card" id="card-模組">
-    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">模組</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6"><span style="font-size:13px;font-weight:600;color:#444">模組</span><span id="rate-模組"></span></div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
       <tr>
         <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
@@ -115,7 +115,7 @@ tr:hover.gh td{background:#f7f7f5}
     <div id="cnt-模組" style="font-size:11px;color:#aaa;text-align:center;margin-top:8px"></div>
   </div>
   <div class="card" id="card-氣囊">
-    <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6">氣囊</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #e8e8e6"><span style="font-size:13px;font-weight:600;color:#444">氣囊</span><span id="rate-氣囊"></span></div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
       <tr>
         <th style="text-align:left;color:#888;font-weight:400;padding:4px 6px 8px;border-bottom:1px solid #e8e8e6;width:35%">品號</th>
@@ -143,7 +143,7 @@ tr:hover.gh td{background:#f7f7f5}
       <button class="fbtn active" onclick="fS('all',this)">全部</button>
       <button class="fbtn" onclick="fS('issue',this)">只看問題品項</button>
       <input class="sinput" placeholder="搜尋品號 / 品名" oninput="sS(this.value)">
-      <span style="font-size:11px;color:#bbb;margin-left:auto">2026-04-10</span>
+      <span style="font-size:11px;color:#bbb;margin-left:auto">2026-04-13</span>
     </div>
     <div class="tw"><table id="tS">
       <tr>
@@ -195,34 +195,34 @@ tr:hover.gh td{background:#f7f7f5}
 
 <script>
 const GRP = {
-  '安全帶': [{p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',stock:0,safe:0,diff:0,shortage:441,days:-9},
-  {p:'A450111NBS00D0',n:'小帶扣單邊組',stock:169,safe:0,diff:169,shortage:284,days:-9},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',stock:74,safe:0,diff:74,shortage:397,days:-9},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',stock:125,safe:24,diff:101,shortage:2489,days:-9},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',stock:20,safe:24,diff:-4,shortage:2587,days:-9},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',stock:96,safe:24,diff:72,shortage:2182,days:-9},
-  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',stock:96,safe:24,diff:72,shortage:2194,days:-9},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2214,days:-9},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2216,days:-9},
-  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',stock:238,safe:144,diff:94,shortage:2222,days:-9},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',stock:192,safe:144,diff:48,shortage:2265,days:-9},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',stock:156,safe:72,diff:84,shortage:2457,days:-9},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',stock:152,safe:72,diff:80,shortage:2451,days:-9},
-  {p:'A450130NS10000',n:'高調器總成',stock:702,safe:216,diff:486,shortage:4564,days:-9},
-  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',stock:216,safe:214,diff:2,shortage:2257,days:-9},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',stock:180,safe:72,diff:108,shortage:2419,days:-9},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',stock:36,safe:72,diff:-36,shortage:2560,days:-9},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',stock:90,safe:80,diff:10,shortage:2532,days:-9},
-  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',stock:0,safe:0,diff:0,shortage:815,days:-9},
-  {p:'A450132NN100F0',n:'三排左側捲收器總成',stock:12,safe:0,diff:12,shortage:389,days:-9},
-  {p:'A450132NN100G0',n:'三排右側捲收器總成',stock:0,safe:0,diff:0,shortage:400,days:-9},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',stock:132,safe:72,diff:60,shortage:7437,days:-9},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',stock:136,safe:72,diff:64,shortage:7412,days:-9},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',stock:334,safe:240,diff:94,shortage:7163,days:-9},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',stock:288,safe:240,diff:48,shortage:7102,days:-9},
-  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',stock:0,safe:0,diff:0,shortage:118,days:21},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',stock:403,safe:240,diff:163,shortage:7150,days:-9},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',stock:196,safe:240,diff:-44,shortage:7361,days:-9},
+  '安全帶': [{p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',stock:48,safe:0,diff:48,shortage:393,days:-12},
+  {p:'A450111NBS00D0',n:'小帶扣單邊組',stock:169,safe:0,diff:169,shortage:284,days:-12},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',stock:56,safe:0,diff:56,shortage:397,days:-12},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',stock:101,safe:24,diff:77,shortage:2487,days:-12},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',stock:25,safe:24,diff:1,shortage:2540,days:-12},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2182,days:-12},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',stock:72,safe:24,diff:48,shortage:2194,days:-12},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',stock:60,safe:24,diff:36,shortage:2214,days:-12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',stock:60,safe:24,diff:36,shortage:2216,days:-12},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',stock:238,safe:144,diff:94,shortage:2126,days:-12},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',stock:240,safe:144,diff:96,shortage:2121,days:-12},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',stock:108,safe:72,diff:36,shortage:2457,days:-12},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',stock:116,safe:72,diff:44,shortage:2451,days:-12},
+  {p:'A450130NS10000',n:'高調器總成',stock:810,safe:216,diff:594,shortage:4348,days:-12},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',stock:144,safe:214,diff:-70,shortage:2257,days:-12},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',stock:144,safe:72,diff:72,shortage:2419,days:-12},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',stock:144,safe:72,diff:72,shortage:2416,days:-12},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',stock:160,safe:80,diff:80,shortage:2422,days:-12},
+  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',stock:0,safe:0,diff:0,shortage:815,days:-12},
+  {p:'A450132NN100F0',n:'三排左側捲收器總成',stock:12,safe:0,diff:12,shortage:389,days:-12},
+  {p:'A450132NN100G0',n:'三排右側捲收器總成',stock:0,safe:0,diff:0,shortage:400,days:-12},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',stock:132,safe:72,diff:60,shortage:7305,days:-12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',stock:136,safe:72,diff:64,shortage:7274,days:-12},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',stock:142,safe:240,diff:-98,shortage:7163,days:-12},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',stock:240,safe:240,diff:0,shortage:7006,days:-12},
+  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',stock:0,safe:0,diff:0,shortage:118,days:18},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',stock:564,safe:240,diff:324,shortage:6857,days:-12},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',stock:52,safe:240,diff:-188,shortage:7361,days:-12},
   {p:'A450131NB100C0',n:'二排左側帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
   {p:'A450131NB100D0',n:'二排右側帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
   {p:'A450131NBC00E0',n:'二排後中帶扣總成',stock:0,safe:144,diff:-144,shortage:0,days:999},
@@ -236,17 +236,17 @@ const GRP = {
   {p:'A4B0125HU00000',n:'方向盤本體總成',stock:0,safe:48,diff:-48,shortage:0,days:999},
   {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:0,days:999},
   {p:'A450075HU00002',n:'方向盤本體總成',stock:0,safe:40,diff:-40,shortage:0,days:999}],
-  '方向盤': [{p:'A450075HU00002',n:'PU方向盤本體總成',stock:40,safe:40,diff:0,shortage:1024,days:-9},
-  {p:'A450120HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:206,days:5},
-  {p:'A450121HL00000',n:'全皮方向盤本體總成',stock:0,safe:24,diff:-24,shortage:268,days:5},
-  {p:'A450134HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:96,days:21},
-  {p:'A450135HU00000',n:'方向盤本體總成',stock:48,safe:48,diff:0,shortage:2111,days:-9},
-  {p:'A450136HU00000',n:'方向盤本體總成',stock:48,safe:48,diff:0,shortage:1287,days:-9},
-  {p:'A450137HU00000',n:'方向盤本體總成',stock:67,safe:48,diff:19,shortage:4308,days:-9},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:2232,days:5},
-  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',stock:0,safe:48,diff:-48,shortage:816,days:-3},
-  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:504,days:-9}],
-  '模組':   [{p:'A450145AG000A0',n:'駕駛座氣囊模組',stock:8,safe:null,diff:null,shortage:164,days:21},
+  '方向盤': [{p:'A450075HU00002',n:'PU方向盤本體總成',stock:40,safe:40,diff:0,shortage:1024,days:-12},
+  {p:'A450120HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:206,days:10},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',stock:0,safe:24,diff:-24,shortage:268,days:2},
+  {p:'A450134HU00000',n:'方向盤本體總成',stock:0,safe:24,diff:-24,shortage:96,days:18},
+  {p:'A450135HU00000',n:'方向盤本體總成',stock:24,safe:48,diff:-24,shortage:2111,days:-12},
+  {p:'A450136HU00000',n:'方向盤本體總成',stock:24,safe:48,diff:-24,shortage:1287,days:-12},
+  {p:'A450137HU00000',n:'方向盤本體總成',stock:43,safe:48,diff:-5,shortage:4284,days:-12},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',stock:24,safe:48,diff:-24,shortage:2208,days:2},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',stock:0,safe:48,diff:-48,shortage:816,days:-6},
+  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',stock:0,safe:48,diff:-48,shortage:504,days:-12}],
+  '模組':   [{p:'A450145AG000A0',n:'駕駛座氣囊模組',stock:8,safe:null,diff:null,shortage:164,days:18},
   {p:'A450122AG000A0',n:'駕駛座氣囊模組',stock:0,safe:24,diff:-24,shortage:0,days:999},
   {p:'A450123AG000B0',n:'乘客座氣囊模組',stock:0,safe:24,diff:-24,shortage:0,days:999},
   {p:'A450124AY000C0',n:'左側邊氣囊模組總成',stock:0,safe:24,diff:-24,shortage:0,days:999},
@@ -263,186 +263,144 @@ const GRP = {
   {p:'B450140A1C00B0',n:'乘客座氣囊袋總成 PAB',stock:0,safe:null,diff:null,shortage:0,days:999},
   {p:'B450145A1C00A0',n:'駕駛座氣囊袋總成 DAB',stock:0,safe:null,diff:null,shortage:0,days:999}],
 };
-const UD = [{p:'A450135HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-10',days:0,qty:48,stock:0,short:48},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-10',days:0,qty:38,stock:10,short:38},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-10',days:0,qty:18,stock:0,short:18},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-10',days:0,qty:18,stock:0,short:18},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-10',days:0,qty:20,stock:0,short:20},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-10',days:0,qty:72,stock:0,short:72},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-10',days:0,qty:72,stock:0,short:72},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-10',days:0,qty:96,stock:0,short:96},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-10',days:0,qty:96,stock:0,short:96},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-10',days:0,qty:18,stock:0,short:18},
-  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-10',days:0,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-10',days:0,qty:20,stock:0,short:20},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-10',days:0,qty:12,stock:0,short:12},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-10',days:0,qty:67,stock:0,short:67},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-10',days:0,qty:60,stock:0,short:60},
-  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-13',days:3,qty:48,stock:0,short:48},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-13',days:3,qty:24,stock:0,short:24},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-13',days:3,qty:24,stock:0,short:24},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-13',days:3,qty:12,stock:0,short:12},
-  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-13',days:3,qty:18,stock:0,short:18},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-13',days:3,qty:18,stock:0,short:18},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-13',days:3,qty:20,stock:0,short:20},
-  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-13',days:3,qty:72,stock:0,short:72},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-13',days:3,qty:60,stock:0,short:60},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-13',days:3,qty:72,stock:0,short:72},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-13',days:3,qty:96,stock:0,short:96},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-13',days:3,qty:48,stock:0,short:48},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-13',days:3,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-13',days:3,qty:22,stock:0,short:22},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-13',days:3,qty:12,stock:0,short:12},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-13',days:3,qty:12,stock:0,short:12},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-13',days:3,qty:12,stock:0,short:12},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-13',days:3,qty:71,stock:0,short:71},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-13',days:3,qty:72,stock:0,short:72},
-  {p:'A450135HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-14',days:4,qty:48,stock:0,short:48},
-  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'04-14',days:4,qty:40,stock:0,short:40},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-14',days:4,qty:18,stock:0,short:18},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-14',days:4,qty:18,stock:0,short:18},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-14',days:4,qty:30,stock:0,short:30},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-14',days:4,qty:84,stock:0,short:84},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-14',days:4,qty:72,stock:0,short:72},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-14',days:4,qty:48,stock:0,short:48},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-14',days:4,qty:96,stock:0,short:96},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-14',days:4,qty:18,stock:0,short:18},
-  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'04-14',days:4,qty:48,stock:0,short:48},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-14',days:4,qty:25,stock:0,short:25},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:4,qty:24,stock:0,short:24},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-14',days:4,qty:12,stock:0,short:12},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-14',days:4,qty:12,stock:0,short:12},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-14',days:4,qty:73,stock:0,short:73},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:4,qty:72,stock:0,short:72},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-15',days:5,qty:48,stock:0,short:48},
-  {p:'A450120HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-15',days:5,qty:72,stock:0,short:72},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-15',days:5,qty:18,stock:0,short:18},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-15',days:5,qty:18,stock:0,short:18},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-15',days:5,qty:20,stock:0,short:20},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-15',days:5,qty:60,stock:0,short:60},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-15',days:5,qty:60,stock:0,short:60},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-15',days:5,qty:48,stock:0,short:48},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-15',days:5,qty:48,stock:0,short:48},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-15',days:5,qty:18,stock:0,short:18},
-  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-15',days:5,qty:20,stock:0,short:20},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:5,qty:24,stock:0,short:24},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-15',days:5,qty:12,stock:0,short:12},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-15',days:5,qty:12,stock:0,short:12},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-15',days:5,qty:65,stock:0,short:65},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:5,qty:60,stock:0,short:60},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-16',days:6,qty:48,stock:0,short:48},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-16',days:6,qty:12,stock:0,short:12},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-16',days:6,qty:24,stock:0,short:24},
-  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-16',days:6,qty:48,stock:0,short:48},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-16',days:6,qty:36,stock:0,short:36},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-16',days:6,qty:18,stock:0,short:18},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-16',days:6,qty:20,stock:0,short:20},
-  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-16',days:6,qty:72,stock:0,short:72},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-16',days:6,qty:60,stock:0,short:60},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-16',days:6,qty:72,stock:0,short:72},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-16',days:6,qty:96,stock:0,short:96},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-16',days:6,qty:48,stock:0,short:48},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
-  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-16',days:6,qty:22,stock:0,short:22},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:6,qty:24,stock:0,short:24},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-16',days:6,qty:12,stock:0,short:12},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-16',days:6,qty:24,stock:0,short:24},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-16',days:6,qty:66,stock:0,short:66},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:6,qty:72,stock:0,short:72},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-17',days:7,qty:48,stock:0,short:48},
-  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:24,stock:0,short:24},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:48,stock:0,short:48},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:7,qty:30,stock:0,short:30},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
-  {p:'A450130NS10000',n:'高調器總成',date:'04-17',days:7,qty:54,stock:0,short:54},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-17',days:7,qty:48,stock:0,short:48},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-17',days:7,qty:18,stock:0,short:18},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-17',days:7,qty:36,stock:0,short:36},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-17',days:7,qty:30,stock:0,short:30},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-17',days:7,qty:84,stock:0,short:84},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-17',days:7,qty:72,stock:0,short:72},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-17',days:7,qty:48,stock:0,short:48},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-17',days:7,qty:18,stock:0,short:18},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-17',days:7,qty:24,stock:0,short:24},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-17',days:7,qty:38,stock:0,short:38},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:7,qty:24,stock:0,short:24},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-17',days:7,qty:24,stock:0,short:24},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-17',days:7,qty:12,stock:0,short:12},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-17',days:7,qty:74,stock:0,short:74},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:7,qty:72,stock:0,short:72},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-20',days:10,qty:48,stock:0,short:48},
-  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-20',days:10,qty:24,stock:0,short:24},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-22',days:12,qty:48,stock:0,short:48},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-22',days:12,qty:1,stock:0,short:1},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-22',days:12,qty:5,stock:0,short:5},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'04-22',days:12,qty:10,stock:0,short:10},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:12,qty:5,stock:0,short:5},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:12,qty:3,stock:0,short:3},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-22',days:12,qty:1,stock:0,short:1},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-22',days:12,qty:1,stock:0,short:1},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-24',days:14,qty:48,stock:0,short:48},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-27',days:17,qty:48,stock:0,short:48},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-28',days:18,qty:48,stock:0,short:48},
-  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'05-01',days:21,qty:456,stock:0,short:456},
-  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'05-01',days:21,qty:432,stock:0,short:432},
-  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'05-01',days:21,qty:465,stock:0,short:465},
-  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
-  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
-  {p:'A450130NS10000',n:'高調器總成',date:'05-01',days:21,qty:918,stock:0,short:918},
-  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'05-01',days:21,qty:480,stock:0,short:480},
-  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'05-01',days:21,qty:528,stock:0,short:528},
-  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
-  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'05-01',days:21,qty:468,stock:0,short:468},
-  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'05-01',days:21,qty:460,stock:0,short:460},
-  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'05-01',days:21,qty:504,stock:0,short:504},
-  {p:'A450132NN100F0',n:'三排左側捲收器總成',date:'05-01',days:21,qty:72,stock:0,short:72},
-  {p:'A450132NN100G0',n:'三排右側捲收器總成',date:'05-01',days:21,qty:72,stock:0,short:72},
-  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',date:'05-01',days:21,qty:120,stock:0,short:120},
-  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:468,stock:0,short:468},
-  {p:'A450120HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:48,stock:0,short:48},
-  {p:'A450134HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:24,stock:0,short:24},
-  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'05-01',days:21,qty:48,stock:0,short:48},
-  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'05-01',days:21,qty:444,stock:0,short:444},
-  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'05-01',days:21,qty:444,stock:0,short:444},
-  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:1272,stock:0,short:1272},
-  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'05-01',days:21,qty:1236,stock:0,short:1236},
-  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'05-01',days:21,qty:1248,stock:0,short:1248},
-  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'05-01',days:21,qty:1344,stock:0,short:1344},
-  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'05-01',days:21,qty:1248,stock:0,short:1248},
-  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',date:'05-01',days:21,qty:72,stock:0,short:72},
-  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'05-01',days:21,qty:1233,stock:0,short:1233},
-  {p:'A450135HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:384,stock:0,short:384},
-  {p:'A450136HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:312,stock:0,short:312},
-  {p:'A450137HU00000',n:'方向盤本體總成',date:'05-01',days:21,qty:624,stock:0,short:624},
-  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'05-01',days:21,qty:90,stock:0,short:90},
-  {p:'A450111NBS00D0',n:'小帶扣單邊組',date:'05-01',days:21,qty:119,stock:25,short:119},
-  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'05-01',days:21,qty:96,stock:0,short:96},
-  {p:'A450145AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:21,qty:4,stock:8,short:4},
-  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'05-01',days:21,qty:200,stock:0,short:200},
-  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:21,qty:120,stock:0,short:120},
-  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:21,qty:528,stock:0,short:528},
-  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'05-01',days:21,qty:144,stock:0,short:144}];
+const UD = [{p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-13',days:0,qty:48,stock:0,short:48},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-13',days:0,qty:72,stock:0,short:72},
+  {p:'A450135HU00000',n:'方向盤本體總成',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-14',days:1,qty:48,stock:0,short:48},
+  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'04-14',days:1,qty:40,stock:0,short:40},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-14',days:1,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-14',days:1,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-14',days:1,qty:30,stock:0,short:30},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-14',days:1,qty:69,stock:15,short:69},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-14',days:1,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-14',days:1,qty:48,stock:0,short:48},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-14',days:1,qty:96,stock:0,short:96},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-14',days:1,qty:18,stock:0,short:18},
+  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'04-14',days:1,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-14',days:1,qty:25,stock:0,short:25},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:1,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-14',days:1,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-14',days:1,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-14',days:1,qty:73,stock:0,short:73},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-14',days:1,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-15',days:2,qty:48,stock:0,short:48},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-15',days:2,qty:72,stock:0,short:72},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-15',days:2,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-15',days:2,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-15',days:2,qty:20,stock:0,short:20},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-15',days:2,qty:60,stock:0,short:60},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-15',days:2,qty:60,stock:0,short:60},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-15',days:2,qty:48,stock:0,short:48},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-15',days:2,qty:48,stock:0,short:48},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-15',days:2,qty:18,stock:0,short:18},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-15',days:2,qty:20,stock:0,short:20},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:2,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-15',days:2,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-15',days:2,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-15',days:2,qty:65,stock:0,short:65},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-15',days:2,qty:60,stock:0,short:60},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-16',days:3,qty:48,stock:0,short:48},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-16',days:3,qty:12,stock:0,short:12},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-16',days:3,qty:24,stock:0,short:24},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'04-16',days:3,qty:48,stock:0,short:48},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-16',days:3,qty:36,stock:0,short:36},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-16',days:3,qty:18,stock:0,short:18},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-16',days:3,qty:20,stock:0,short:20},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'04-16',days:3,qty:72,stock:0,short:72},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-16',days:3,qty:60,stock:0,short:60},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-16',days:3,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-16',days:3,qty:96,stock:0,short:96},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'04-16',days:3,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-16',days:3,qty:24,stock:0,short:24},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'04-16',days:3,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-16',days:3,qty:22,stock:0,short:22},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:3,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-16',days:3,qty:12,stock:0,short:12},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-16',days:3,qty:24,stock:0,short:24},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-16',days:3,qty:66,stock:0,short:66},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-16',days:3,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-17',days:4,qty:48,stock:0,short:48},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'04-17',days:4,qty:24,stock:0,short:24},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:4,qty:48,stock:0,short:48},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'04-17',days:4,qty:30,stock:0,short:30},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-17',days:4,qty:36,stock:0,short:36},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'04-17',days:4,qty:36,stock:0,short:36},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'04-17',days:4,qty:18,stock:0,short:18},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'04-17',days:4,qty:36,stock:0,short:36},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'04-17',days:4,qty:30,stock:0,short:30},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'04-17',days:4,qty:84,stock:0,short:84},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-17',days:4,qty:72,stock:0,short:72},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'04-17',days:4,qty:48,stock:0,short:48},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'04-17',days:4,qty:18,stock:0,short:18},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'04-17',days:4,qty:24,stock:0,short:24},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-17',days:4,qty:38,stock:0,short:38},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:4,qty:24,stock:0,short:24},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'04-17',days:4,qty:24,stock:0,short:24},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'04-17',days:4,qty:12,stock:0,short:12},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-17',days:4,qty:74,stock:0,short:74},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-17',days:4,qty:72,stock:0,short:72},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-20',days:7,qty:48,stock:0,short:48},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'04-20',days:7,qty:24,stock:0,short:24},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-22',days:9,qty:48,stock:0,short:48},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'04-22',days:9,qty:1,stock:0,short:1},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'04-22',days:9,qty:5,stock:0,short:5},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:9,qty:5,stock:0,short:5},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'04-22',days:9,qty:3,stock:0,short:3},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'04-22',days:9,qty:1,stock:0,short:1},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'04-22',days:9,qty:1,stock:0,short:1},
+  {p:'A450120HU00000',n:'方向盤本體總成',date:'04-23',days:10,qty:24,stock:0,short:24},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-24',days:11,qty:48,stock:0,short:48},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-27',days:14,qty:48,stock:0,short:48},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'04-28',days:15,qty:48,stock:0,short:48},
+  {p:'A450124AY000C0',n:'左側邊氣囊模組總成',date:'05-01',days:18,qty:456,stock:0,short:456},
+  {p:'A450125AY000C0',n:'右側邊氣囊模組總成',date:'05-01',days:18,qty:432,stock:0,short:432},
+  {p:'A450123AG000B0',n:'乘客座氣囊模組',date:'05-01',days:18,qty:465,stock:0,short:465},
+  {p:'A450130NP100A0',n:'一排左側預緊式捲收器總成',date:'05-01',days:18,qty:468,stock:0,short:468},
+  {p:'A450130NP100B0',n:'一排右側預緊式捲收器總成',date:'05-01',days:18,qty:468,stock:0,short:468},
+  {p:'A450130NS10000',n:'高調器總成',date:'05-01',days:18,qty:756,stock:162,short:756},
+  {p:'A450130NB100A0',n:'一排左側帶扣總成(含感應開關)',date:'05-01',days:18,qty:480,stock:0,short:480},
+  {p:'A450130NB100B0',n:'一排右側帶扣總成(含感應開關)',date:'05-01',days:18,qty:528,stock:0,short:528},
+  {p:'A450131NN100C0',n:'二排左側捲收器總成',date:'05-01',days:18,qty:468,stock:0,short:468},
+  {p:'A450131NN100D0',n:'二排右側捲收器總成',date:'05-01',days:18,qty:468,stock:0,short:468},
+  {p:'A450131NN100E0',n:'二排中座捲收器總成',date:'05-01',days:18,qty:460,stock:0,short:460},
+  {p:'A450131NBS00E0',n:'二排中座小帶扣總成',date:'05-01',days:18,qty:504,stock:0,short:504},
+  {p:'A450132NN100F0',n:'三排左側捲收器總成',date:'05-01',days:18,qty:72,stock:0,short:72},
+  {p:'A450132NN100G0',n:'三排右側捲收器總成',date:'05-01',days:18,qty:72,stock:0,short:72},
+  {p:'A450132NB100F0',n:'三排帶扣總成(含感應開關)',date:'05-01',days:18,qty:120,stock:0,short:120},
+  {p:'A450122AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:18,qty:468,stock:0,short:468},
+  {p:'A450120HU00000',n:'方向盤本體總成',date:'05-01',days:18,qty:48,stock:0,short:48},
+  {p:'A450134HU00000',n:'方向盤本體總成',date:'05-01',days:18,qty:24,stock:0,short:24},
+  {p:'A450121HL00000',n:'全皮方向盤本體總成',date:'05-01',days:18,qty:48,stock:0,short:48},
+  {p:'A450126AY000C1',n:'左側邊氣囊模組總成',date:'05-01',days:18,qty:444,stock:0,short:444},
+  {p:'A450127AY000C1',n:'右側邊氣囊模組總成',date:'05-01',days:18,qty:444,stock:0,short:444},
+  {p:'A450138AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:18,qty:1272,stock:0,short:1272},
+  {p:'A450141NP100A0',n:'JS左側預緊式捲收器總成',date:'05-01',days:18,qty:1236,stock:0,short:1236},
+  {p:'A450141NP100B0',n:'JS右側預緊式捲收器總成',date:'05-01',days:18,qty:1248,stock:0,short:1248},
+  {p:'A450141NB100A0',n:'JS左側帶扣總成(含感應開關)',date:'05-01',days:18,qty:1344,stock:0,short:1344},
+  {p:'A450141NB100B0',n:'JS右側帶扣總成(含感應開關)',date:'05-01',days:18,qty:1248,stock:0,short:1248},
+  {p:'A450141NB100B1',n:'JS右側帶扣總成(不含感應開關)',date:'05-01',days:18,qty:72,stock:0,short:72},
+  {p:'A450140AG000B0',n:'乘客座氣囊模組',date:'05-01',days:18,qty:1233,stock:0,short:1233},
+  {p:'A450135HU00000',n:'方向盤本體總成',date:'05-01',days:18,qty:384,stock:0,short:384},
+  {p:'A450136HU00000',n:'方向盤本體總成',date:'05-01',days:18,qty:312,stock:0,short:312},
+  {p:'A450137HU00000',n:'方向盤本體總成',date:'05-01',days:18,qty:624,stock:0,short:624},
+  {p:'A450111NN100E0',n:'後中捲收器總成(直立式20度)',date:'05-01',days:18,qty:90,stock:0,short:90},
+  {p:'A450111NBS00D0',n:'小帶扣單邊組',date:'05-01',days:18,qty:119,stock:25,short:119},
+  {p:'A450111NBC00E1',n:'後中帶扣組(含感應開關)',date:'05-01',days:18,qty:96,stock:0,short:96},
+  {p:'A450145AG000A0',n:'駕駛座氣囊模組',date:'05-01',days:18,qty:4,stock:8,short:4},
+  {p:'A450075HU00002',n:'PU方向盤本體總成',date:'05-01',days:18,qty:200,stock:0,short:200},
+  {p:'A4B0126HL00000',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:18,qty:120,stock:0,short:120},
+  {p:'A4B0124HL00001',n:'全皮方向盤本體總成(深灰線)',date:'05-01',days:18,qty:504,stock:24,short:504},
+  {p:'A4B0125HU00000',n:'方向盤本體總成(黑PG05)',date:'05-01',days:18,qty:144,stock:0,short:144}];
 
 function lc(d){
   if(d.safe===null)return 'x';
@@ -464,6 +422,20 @@ function buildGroupTable(grp) {
   if(!tbody) return;
   tbody.innerHTML = '';
   var normalCount = 0;
+  // 計算達成率
+  var allParts2 = GRP[grp] ? GRP[grp] : [];
+  var withSafe = allParts2.filter(function(d) { return d.safe && d.safe > 0; });
+  var achieved = withSafe.filter(function(d) { return d.stock >= d.safe; });
+  var rateEl = document.getElementById('rate-' + grp);
+  if(rateEl) {
+    if(withSafe.length > 0) {
+      var pct = Math.round(achieved.length / withSafe.length * 100);
+      var color = pct >= 80 ? '#1a7a4a' : pct >= 50 ? '#c47d0e' : '#c0392b';
+      rateEl.innerHTML = '<span style="font-size:12px;font-weight:600;color:' + color + '">' + achieved.length + '/' + withSafe.length + ' (' + pct + '%)</span>';
+    } else {
+      rateEl.innerHTML = '<span style="font-size:11px;color:#aaa">未設安全庫存</span>';
+    }
+  }
   var parts = GRP[grp] ? GRP[grp].slice() : [];
   parts.sort(function(a,b) {
     var aOk = !a.safe || a.stock >= a.safe;
